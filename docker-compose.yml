@@ -1,19 +1,16 @@
 services:
   db:
-    build:
-      target: db
-    image: ${PROJECT_NAME}/db
+    image: docker.io/mariadb:latest
     container_name: db
     restart: unless-stopped
     volumes:
+      - ./config/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - ./config/logs/sql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - 3307:3306
     networks:
       - wp_net
 
@@ -50,9 +47,7 @@ services:
       - wp_net
 
   nginx:
-    build:
-      target: server
-    image: ${PROJECT_NAME}/nginx
+    image: docker.io/nginx:1.28-alpine3.21
     container_name: nginx
     restart: unless-stopped
     volumes:
@@ -67,8 +62,6 @@ services:
       - wp
     networks:
       wp_net:
-        aliases:
-          - localhost.test
 
 volumes:
   wp_data:
@@ -76,3 +69,5 @@ volumes:
 networks:
   wp_net:
     driver: bridge
+    aliases:
+      - localhost.test
