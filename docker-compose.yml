@@ -15,9 +15,7 @@ services:
       - wp_net
 
   wp:
-    build:
-      target: wp
-    image: ${PROJECT_NAME}/wp
+    image: docker.io/wordpress:6.8.1-php8.4-fpm-alpine
     container_name: wp
     restart: unless-stopped
     environment:
@@ -46,6 +44,21 @@ services:
     networks:
       - wp_net
 
+  wpcli:
+    image: docker.io/wordpress:cli-2.12.0-php8.4
+    container_name: wpcli
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: "${DB_HOST}:${DB_PORT}"
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_TABLE_PREFIX: ${DB_TABLE_PREFIX}
+    volumes:
+      - wp_data:/var/www/html
+    networks:
+      - wp_net
+
   nginx:
     image: docker.io/nginx:1.28-alpine3.21
     container_name: nginx
@@ -62,6 +75,8 @@ services:
       - wp
     networks:
       wp_net:
+        aliases:
+          - localhost.test
 
 volumes:
   wp_data:
@@ -69,5 +84,3 @@ volumes:
 networks:
   wp_net:
     driver: bridge
-    aliases:
-      - localhost.test
