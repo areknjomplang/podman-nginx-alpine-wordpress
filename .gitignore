@@ -1,0 +1,8 @@
+# .gitignore
+!.gitkeep
+config/ssl/*
+!config/ssl/.gitkeep
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
