@@ -1,7 +1,7 @@
 ARG THEME_NAME
 LABEL theme=$THEME_NAME
 
-FROM docker.io/wordpress:6.8.3-php8.3-fpm-alpine
+FROM docker.io/wordpress:6.9.0-php8.5-fpm-alpine
 
 # Install dependencies
 RUN apk update && \
@@ -10,8 +10,8 @@ RUN apk update && \
         g++ \
         make \
         autoconf \
-        php83-dev \
-        php83-pear && \
+        php85-dev \
+        php85-pear && \
     pecl install redis && \
     echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
 

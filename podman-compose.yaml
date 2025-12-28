@@ -1,6 +1,6 @@
 services:
   db:
-    image: docker.io/mariadb:10.6
+    image: docker.io/mariadb:12.1
     container_name: db
     restart: always
     volumes:
@@ -8,10 +8,7 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./logs/mysql:/var/log/mysql
     environment:
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
       MYSQL_ROOT_HOST: "%"
-      MARIADB_MYSQL_LOCALHOST_USER: 1
-      MARIADB_MYSQL_LOCALHOST_GRANTS: USAGE
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: wordpress
       MARIADB_USER: root
@@ -35,7 +32,7 @@ services:
       retries: 5
 
   adminer:
-    image: docker.io/adminer:4.8.1
+    image: docker.io/adminer:5.4.1
     container_name: adminer
     restart: always
     environment:
