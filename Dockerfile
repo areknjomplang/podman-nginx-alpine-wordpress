@@ -1,7 +1,4 @@
-ARG THEME_NAME
-LABEL theme=$THEME_NAME
-
-FROM docker.io/wordpress:7.0.0-php8.5-fpm-alpine
+FROM docker.io/wordpress:7.1.2-php8.5-fpm-alpine
 
 # Install dependencies
 RUN apk update && \
