@@ -1,25 +1,21 @@
 FROM docker.io/wordpress:7.1.2-php8.5-fpm-alpine
 
-# Install dependencies
-RUN apk update && \
-    apk add --no-cache \
-        gcc \
-        g++ \
-        make \
-        autoconf \
-        php85-dev \
-        php85-pear && \
-    pecl install redis && \
-    echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+# Install PHP Extensions melalui MLocati installer
+COPY --from=docker.io/mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions redis
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=docker.io/library/composer:2.10.3 /usr/bin/composer /usr/local/bin/composer
 
 # Install WP-CLI
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar && \
-    mv wp-cli.phar /usr/local/bin/wp
+RUN set -eux; \
+    curl -fsSL -o /tmp/wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar; \
+    EXPECTED="$(curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar.sha512)"; \
+    echo "$EXPECTED  /tmp/wp-cli.phar" | sha512sum -c -; \
+    chmod +x /tmp/wp-cli.phar; \
+    mv /tmp/wp-cli.phar /usr/local/bin/wp
 
 RUN mkdir -p /var/www/html/wp-content/cache
 
+# Ensure wp-content/cache is owned by www-data
 RUN chown -R www-data:www-data /var/www/html/wp-content/cache
